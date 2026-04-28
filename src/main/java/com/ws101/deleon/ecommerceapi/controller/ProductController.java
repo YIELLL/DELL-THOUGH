@@ -2,8 +2,10 @@ package com.ws101.deleon.ecommerceapi.controller;
 
 import com.ws101.deleon.ecommerceapi.model.Product;
 import com.ws101.deleon.ecommerceapi.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1/products")
+@Validated
 public class ProductController {
 
     /**
@@ -57,9 +60,8 @@ public class ProductController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        return productService.getProductById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Product product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
     }
 
     /**
@@ -88,21 +90,7 @@ public class ProductController {
      * @return ResponseEntity containing the created product with HTTP 201 Created
      */
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        // Input validation
-        if (product.getName() == null || product.getName().trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (product.getPrice() <= 0) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (product.getCategory() == null || product.getCategory().trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (product.getStockQuantity() < 0) {
-            return ResponseEntity.badRequest().build();
-        }
-
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         Product createdProduct = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
@@ -117,24 +105,9 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(
             @PathVariable Long id,
-            @RequestBody Product product) {
-        // Input validation
-        if (product.getName() == null || product.getName().trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (product.getPrice() <= 0) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (product.getCategory() == null || product.getCategory().trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (product.getStockQuantity() < 0) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        return productService.updateProduct(id, product)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+            @Valid @RequestBody Product product) {
+        Product updatedProduct = productService.updateProduct(id, product);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     /**
@@ -148,9 +121,8 @@ public class ProductController {
     public ResponseEntity<Product> patchProduct(
             @PathVariable Long id,
             @RequestBody Product product) {
-        return productService.patchProduct(id, product)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Product updatedProduct = productService.patchProduct(id, product);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     /**
@@ -162,10 +134,7 @@ public class ProductController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        boolean deleted = productService.deleteProduct(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,11 +1,11 @@
 package com.ws101.deleon.ecommerceapi.service;
 
+import com.ws101.deleon.ecommerceapi.exception.ProductNotFoundException;
 import com.ws101.deleon.ecommerceapi.model.Product;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -110,13 +110,14 @@ public class ProductService {
      * Finds a product by its unique identifier.
      * 
      * @param id the unique identifier of the product to find.
-     * @return an {@code Optional<Product>} containing the product if found,
-     *         or an empty Optional if not found.
+     * @return the product if found.
+     * @throws ProductNotFoundException if the product does not exist.
      */
-    public Optional<Product> getProductById(Long id) {
+    public Product getProductById(Long id) {
         return productList.stream()
                 .filter(product -> product.getId().equals(id))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
     }
 
     /**
@@ -136,18 +137,18 @@ public class ProductService {
      * 
      * @param id      the unique identifier of the product to update.
      * @param product the updated product data.
-     * @return an {@code Optional<Product>} containing the updated product if found,
-     *         or an empty Optional if not found.
+     * @return the updated product.
+     * @throws ProductNotFoundException if the product does not exist.
      */
-    public Optional<Product> updateProduct(Long id, Product product) {
+    public Product updateProduct(Long id, Product product) {
         for (int i = 0; i < productList.size(); i++) {
             if (productList.get(i).getId().equals(id)) {
                 product.setId(id);
                 productList.set(i, product);
-                return Optional.of(product);
+                return product;
             }
         }
-        return Optional.empty();
+        throw new ProductNotFoundException("Product not found with id: " + id);
     }
 
     /**
@@ -156,38 +157,32 @@ public class ProductService {
      * 
      * @param id      the unique identifier of the product to patch.
      * @param product the product data with fields to update.
-     * @return an {@code Optional<Product>} containing the updated product if found,
-     *         or an empty Optional if not found.
+     * @return the updated product.
+     * @throws ProductNotFoundException if the product does not exist.
      */
-    public Optional<Product> patchProduct(Long id, Product product) {
-        Optional<Product> existingProduct = getProductById(id);
-        
-        if (existingProduct.isPresent()) {
-            Product existing = existingProduct.get();
-            
-            // Update only non-null fields
-            if (product.getName() != null) {
-                existing.setName(product.getName());
-            }
-            if (product.getDescription() != null) {
-                existing.setDescription(product.getDescription());
-            }
-            if (product.getPrice() > 0) {
-                existing.setPrice(product.getPrice());
-            }
-            if (product.getCategory() != null) {
-                existing.setCategory(product.getCategory());
-            }
-            if (product.getStockQuantity() >= 0) {
-                existing.setStockQuantity(product.getStockQuantity());
-            }
-            if (product.getImageUrl() != null) {
-                existing.setImageUrl(product.getImageUrl());
-            }
-            
-            return Optional.of(existing);
+    public Product patchProduct(Long id, Product product) {
+        Product existing = getProductById(id);
+
+        if (product.getName() != null) {
+            existing.setName(product.getName());
         }
-        return Optional.empty();
+        if (product.getDescription() != null) {
+            existing.setDescription(product.getDescription());
+        }
+        if (product.getPrice() > 0) {
+            existing.setPrice(product.getPrice());
+        }
+        if (product.getCategory() != null) {
+            existing.setCategory(product.getCategory());
+        }
+        if (product.getStockQuantity() >= 0) {
+            existing.setStockQuantity(product.getStockQuantity());
+        }
+        if (product.getImageUrl() != null) {
+            existing.setImageUrl(product.getImageUrl());
+        }
+
+        return existing;
     }
 
     /**
@@ -197,8 +192,11 @@ public class ProductService {
      * @return {@code true} if the product was found and deleted,
      *         {@code false} if the product was not found.
      */
-    public boolean deleteProduct(Long id) {
-        return productList.removeIf(product -> product.getId().equals(id));
+    public void deleteProduct(Long id) {
+        boolean removed = productList.removeIf(product -> product.getId().equals(id));
+        if (!removed) {
+            throw new ProductNotFoundException("Product not found with id: " + id);
+        }
     }
 
     /**

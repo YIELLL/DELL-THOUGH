@@ -1,5 +1,8 @@
 package com.ws101.deleon.ecommerceapi.model;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,29 +32,34 @@ public class Product {
      * Name of the product.
      * Required field with minimum length validation.
      */
+    @NotBlank(message = "Product name is required")
     private String name;
     
     /**
      * Detailed description of the product.
      */
+    @NotBlank(message = "Product description is required")
     private String description;
     
     /**
      * Price of the product in the catalog.
      * Must be a positive number.
      */
+    @Positive(message = "Product price must be greater than zero")
     private double price;
     
     /**
      * Category classification for the product.
      * Required field for filtering and organization.
      */
+    @NotBlank(message = "Product category is required")
     private String category;
     
     /**
      * Available stock quantity for the product.
      * Must be a non-negative integer.
      */
+    @Min(value = 0, message = "Stock quantity cannot be negative")
     private int stockQuantity;
     
     /**

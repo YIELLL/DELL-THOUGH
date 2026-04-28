@@ -63,6 +63,16 @@ EcommerceApi/
 
 The application will start on `http://localhost:8080`
 
+## Spring Guide Resources
+
+This project follows the structure and REST-service patterns from the official Spring guides:
+
+- https://spring.io/guides/gs/spring-boot/
+- https://spring.io/guides/gs/rest-service
+- https://spring.io/quickstart/
+
+The code uses Spring Boot starter web, controller-based REST endpoints, request validation, and an in-memory product catalog for quick development and testing.
+
 ## API Endpoint Reference
 
 ### Base URL
