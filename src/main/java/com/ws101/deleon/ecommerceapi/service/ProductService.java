@@ -169,13 +169,19 @@ public class ProductService {
         if (product.getDescription() != null) {
             existing.setDescription(product.getDescription());
         }
-        if (product.getPrice() > 0) {
+        if (product.getPrice() != null) {
+            if (product.getPrice() <= 0) {
+                throw new IllegalArgumentException("Product price must be greater than zero");
+            }
             existing.setPrice(product.getPrice());
         }
         if (product.getCategory() != null) {
             existing.setCategory(product.getCategory());
         }
-        if (product.getStockQuantity() >= 0) {
+        if (product.getStockQuantity() != null) {
+            if (product.getStockQuantity() < 0) {
+                throw new IllegalArgumentException("Stock quantity cannot be negative");
+            }
             existing.setStockQuantity(product.getStockQuantity());
         }
         if (product.getImageUrl() != null) {

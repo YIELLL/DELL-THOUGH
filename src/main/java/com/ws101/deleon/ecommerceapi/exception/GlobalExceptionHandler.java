@@ -1,11 +1,14 @@
 package com.ws101.deleon.ecommerceapi.exception;
 
+import com.ws101.deleon.ecommerceapi.exception.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -67,6 +70,34 @@ public class GlobalExceptionHandler {
             HttpStatus.BAD_REQUEST.value(),
             "VALIDATION_FAILED",
             String.join("; ", errors)
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleMessageNotReadable(HttpMessageNotReadableException ex) {
+        return buildErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            "MALFORMED_JSON",
+            "Request body is invalid or malformed JSON: " + ex.getMostSpecificCause().getMessage()
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        return buildErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            "TYPE_MISMATCH",
+            String.format("Invalid value '%s' for parameter '%s'. Expected type %s.",
+                    ex.getValue(), ex.getName(), ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown")
+        );
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, Object>> handleMissingRequestParameter(MissingServletRequestParameterException ex) {
+        return buildErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            "MISSING_PARAMETER",
+            String.format("Missing required request parameter: %s", ex.getParameterName())
         );
     }
 

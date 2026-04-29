@@ -2,6 +2,7 @@ package com.ws101.deleon.ecommerceapi.model;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,8 +46,9 @@ public class Product {
      * Price of the product in the catalog.
      * Must be a positive number.
      */
+    @NotNull(message = "Product price is required")
     @Positive(message = "Product price must be greater than zero")
-    private double price;
+    private Double price;
     
     /**
      * Category classification for the product.
@@ -59,8 +61,9 @@ public class Product {
      * Available stock quantity for the product.
      * Must be a non-negative integer.
      */
+    @NotNull(message = "Stock quantity is required")
     @Min(value = 0, message = "Stock quantity cannot be negative")
-    private int stockQuantity;
+    private Integer stockQuantity;
     
     /**
      * URL to the product image (optional).
