@@ -1,5 +1,6 @@
 package com.ws101.deleon.ecommerceapi.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,20 +14,26 @@ import lombok.NoArgsConstructor;
  * 
  * This class models a product with essential e-commerce attributes including
  * identification, pricing, inventory, and categorization information.
+ * Persisted to the database with One-to-Many relationship to Category.
  * 
  * @author Kent Jeanne S. De Leon
  * @author Keniel Drew D. De Asis
- * @see ProductService
- * @see ProductController
+ * @see com.ws101.deleon.ecommerceapi.service.ProductService
+ * @see com.ws101.deleon.ecommerceapi.controller.ProductController
  */
+@Entity
+@Table(name = "products")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
     
     /**
-     * Unique identifier for the product.
+     * Unique identifier for the product (Primary Key).
+     * Auto-generated using database identity strategy.
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
@@ -34,12 +41,14 @@ public class Product {
      * Required field with minimum length validation.
      */
     @NotBlank(message = "Product name is required")
+    @Column(nullable = false, length = 255)
     private String name;
     
     /**
      * Detailed description of the product.
      */
     @NotBlank(message = "Product description is required")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
     
     /**
@@ -48,14 +57,16 @@ public class Product {
      */
     @NotNull(message = "Product price is required")
     @Positive(message = "Product price must be greater than zero")
+    @Column(nullable = false)
     private Double price;
     
     /**
-     * Category classification for the product.
-     * Required field for filtering and organization.
+     * Category identifier (Foreign Key).
+     * Links this product to a category.
      */
-    @NotBlank(message = "Product category is required")
-    private String category;
+    @NotNull(message = "Category ID is required")
+    @Column(name = "category_id", nullable = false)
+    private Long categoryId;
     
     /**
      * Available stock quantity for the product.
@@ -63,11 +74,13 @@ public class Product {
      */
     @NotNull(message = "Stock quantity is required")
     @Min(value = 0, message = "Stock quantity cannot be negative")
+    @Column(nullable = false)
     private Integer stockQuantity;
     
     /**
      * URL to the product image (optional).
      * Can be null if no image is available.
      */
+    @Column(length = 512)
     private String imageUrl;
 }

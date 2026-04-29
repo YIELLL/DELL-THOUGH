@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcommerceAPI - Product Catalog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <h1 class="logo">🛍️ EcommerceAPI</h1>
+                <ul class="nav-links">
+                    <li><a href="#products">Products</a></li>
+                    <li><a href="#filters">Filters</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section id="filters" class="filters-section">
+            <h2>Filter Products</h2>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="filterType">Filter By:</label>
+                    <select id="filterType">
+                        <option value="">-- Select Filter --</option>
+                        <option value="name">Product Name</option>
+                        <option value="price">Price Range</option>
+                        <option value="stock">In Stock</option>
+                    </select>
+                </div>
+
+                <div class="filter-group" id="filterValueGroup" style="display:none;">
+                    <label for="filterValue">Value:</label>
+                    <input type="text" id="filterValue" placeholder="e.g., 'Mac' or '50-200'">
+                </div>
+
+                <button id="applyFilterBtn" class="btn btn-primary">Apply Filter</button>
+                <button id="clearFilterBtn" class="btn btn-secondary">Clear Filters</button>
+            </div>
+        </section>
+
+        <section id="products" class="products-section">
+            <h2>Products</h2>
+            <div id="loadingSpinner" class="loading" style="display:none;">
+                <p>Loading products...</p>
+            </div>
+            <div id="errorMessage" class="error-message" style="display:none;"></div>
+            <div id="emptyState" class="empty-state" style="display:none;">
+                <p>No products found. Try adjusting your filters.</p>
+            </div>
+            <div id="productGrid" class="product-grid"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 EcommerceAPI. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
