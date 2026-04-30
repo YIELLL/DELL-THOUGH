@@ -1,41 +1,135 @@
 # EcommerceApi - RESTful Product Catalog API
 
-A Spring Boot REST API backend for an e-commerce project demonstrating HTTP fundamentals, REST principles, and CRUD operations with in-memory data storage.
+A Spring Boot REST API backend for an e-commerce project demonstrating HTTP fundamentals, REST principles, CRUD operations, and persistent database integration using Spring Data JPA.
 
 ## Project Overview
 
-This project implements a RESTful API for managing a product catalog using Spring Boot framework. It demonstrates proper use of HTTP methods, status codes, headers, and REST design principles.
+This project implements a RESTful API for managing a product catalog using Spring Boot framework. It demonstrates proper use of HTTP methods, status codes, headers, REST design principles, and integration with relational databases through JPA/Hibernate.
 
 ### Technology Stack
 
 - **Framework**: Spring Boot 4.0.5
 - **Build Tool**: Gradle
 - **Language**: Java 22+
-- **Dependencies**: Spring Web, Lombok
+- **Persistence**: Spring Data JPA, Hibernate
+- **Database**: MySQL 8.0
+- **Dependencies**: Spring Web, Spring Data JPA, Lombok, Validation
 
 ### Project Structure
 
 ```
 EcommerceApi/
 ├── src/
-│   └── main/
-│       ├── java/com/ws101/deleon/ecommerceapi/
-│       │   ├── EcommerceApiApplication.java
-│       │   ├── controller/
-│       │   │   └── ProductController.java
-│       │   ├── service/
-│       │   │   └── ProductService.java
-│       │   ├── model/
-│       │   │   └── Product.java
-│       │   └── exception/
-│       │       ├── GlobalExceptionHandler.java
-│       │       └── ProductNotFoundException.java
-│       └── resources/
-│           └── application.properties
+│   ├── main/
+│   │   ├── java/com/ws101/deleon/ecommerceapi/
+│   │   │   ├── EcommerceApiApplication.java
+│   │   │   ├── config/
+│   │   │   │   └── WebConfig.java
+│   │   │   ├── controller/
+│   │   │   │   └── ProductController.java
+│   │   │   ├── service/
+│   │   │   │   └── ProductService.java
+│   │   │   ├── model/
+│   │   │   │   ├── Product.java
+│   │   │   │   ├── Category.java
+│   │   │   │   ├── Order.java
+│   │   │   │   └── OrderItem.java
+│   │   │   ├── repository/
+│   │   │   │   ├── ProductRepository.java
+│   │   │   │   ├── CategoryRepository.java
+│   │   │   │   └── OrderRepository.java
+│   │   │   └── exception/
+│   │   │       ├── GlobalExceptionHandler.java
+│   │   │       └── ProductNotFoundException.java
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       └── static/
+│   │           ├── index.html
+│   │           ├── styles.css
+│   │           └── script.js
+│   └── test/...
 ├── build.gradle
 ├── settings.gradle
 └── README.md
 ```
+
+## Database Setup
+
+### Prerequisites
+
+- MySQL 8.0 or higher installed and running
+- Database user with create/drop/alter privileges
+
+### Database Configuration
+
+1. Update `src/main/resources/application.properties`:
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce_db
+   spring.datasource.username=root
+   spring.datasource.password=root
+   spring.jpa.hibernate.ddl-auto=update
+   ```
+
+2. Spring Boot will automatically create the database and tables on first run
+
+### Database Schema
+
+#### Tables
+
+**categories** (Parent table)
+```sql
+CREATE TABLE categories (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    description VARCHAR(500)
+);
+```
+
+**products** (Child of categories)
+```sql
+CREATE TABLE products (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    price DOUBLE NOT NULL,
+    category_id BIGINT NOT NULL,
+    stock_quantity INT NOT NULL,
+    image_url VARCHAR(512),
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
+```
+
+**orders** (Parent table)
+```sql
+CREATE TABLE orders (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    customer_id BIGINT NOT NULL,
+    total_amount DOUBLE NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**order_items** (Child of orders, references products)
+```sql
+CREATE TABLE order_items (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    order_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    product_name VARCHAR(255) NOT NULL,
+    unit_price DOUBLE NOT NULL,
+    quantity INT NOT NULL,
+    subtotal DOUBLE NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+);
+```
+
+#### Entity Relationships
+
+- **One-to-Many**: Category → Product (One category has many products)
+- **One-to-Many**: Order → OrderItem (One order has many items)
+- **References**: OrderItem references Product (for historical records)
 
 ## Setup Instructions
 
@@ -43,10 +137,13 @@ EcommerceApi/
 
 - Java Development Kit (JDK) 22 or higher
 - Gradle (optional - wrapper is included)
+- MySQL 8.0 or higher
 
 ### Running the Application
 
-1. **Using Gradle Wrapper (Linux/Mac)**:
+1. **Start MySQL**: Ensure MySQL server is running on `localhost:3306`
+
+2. **Using Gradle Wrapper (Linux/Mac)**:
    ```bash
    ./gradlew bootRun
    ```
@@ -331,10 +428,91 @@ Content-Type: application/json
 
 ## Known Limitations
 
-- **In-Memory Storage**: Data is stored in a temporary ArrayList and will be lost when the application restarts
-- **No Database**: No persistent storage mechanism implemented
 - **No Authentication**: API endpoints are not secured
 - **No Pagination**: All products are returned in a single response
+- **No Advanced Filtering**: Limited to basic category and price range filtering
+- **No Image Upload**: Images are referenced by URL only
+
+## Frontend Implementation
+
+The project includes a complete frontend implementation using vanilla JavaScript and the Fetch API:
+
+### Features
+- **Product Catalog Display**: Grid layout with product cards
+- **Real-time Filtering**: Filter by category and price range
+- **Responsive Design**: Mobile-friendly layout
+- **Error Handling**: User-friendly error messages
+- **Loading States**: Visual feedback during API calls
+
+### Technologies Used
+- **HTML5**: Semantic markup and structure
+- **CSS3**: Responsive design with Flexbox/Grid
+- **JavaScript (ES6+)**: Async/await with Fetch API
+- **Fetch API**: Modern HTTP client for REST API consumption
+
+### Key Frontend Files
+- `index.html` - Main HTML structure
+- `styles.css` - Responsive styling
+- `script.js` - Fetch API implementation and DOM manipulation
+
+## Database Setup
+
+### Prerequisites
+- MySQL 8.0 or higher installed
+- Database user with appropriate permissions
+
+### Database Configuration
+1. Create the database:
+```sql
+CREATE DATABASE ecommerce_db;
+```
+
+2. Update `application.properties` with your database credentials:
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce_db
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+```
+
+3. The application will automatically create tables using JPA/Hibernate.
+
+### Database Schema
+
+#### Products Table
+```sql
+CREATE TABLE products (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    stock_quantity INT NOT NULL DEFAULT 0,
+    image_url VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+## Running the Application
+
+### Backend (Spring Boot)
+```bash
+# Build the application
+./gradlew build
+
+# Run the application
+./gradlew bootRun
+```
+
+The API will be available at: `http://localhost:8080`
+
+### Frontend
+Open `index.html` in a web browser or serve it through a web server.
+
+### Full Stack Testing
+1. Start the Spring Boot application
+2. Open the frontend in a browser
+3. Test CRUD operations through the UI
 
 ## Git Workflow
 
@@ -347,9 +525,10 @@ Content-Type: application/json
 <Type>: <action phrase describing what was implemented>
 
 Examples:
-- feat: implemented product filtering by price range
-- fix: resolved getAllProducts() returning null values
-- chore: added sample product data initialization
+- feat: implemented JPA database integration
+- feat: added Fetch API frontend implementation
+- fix: resolved CORS configuration issues
+- chore: updated README with database setup instructions
 ```
 
 ### Common Git Commands
@@ -361,19 +540,19 @@ git status
 git add .
 
 # Commit changes
-git commit -m "feat: implemented product CRUD operations"
+git commit -m "feat: implemented database integration with JPA"
 
 # Push to remote
-git push origin feature/product-api
+git push origin feature/database-integration
 
 # Switch to main branch
 git checkout main
 
 # Merge feature branch
-git merge feature/product-api
+git merge feature/database-integration
 
 # Delete feature branch
-git branch -d feature/product-api
+git branch -d feature/database-integration
 ```
 
 ## Authors
@@ -387,20 +566,7 @@ This project is for educational purposes as part of Laboratory 7 - HTTP Fundamen
 
 ## Version
 
-1.0.0 - Initial Release
-
-## Input Validation Rules
-
-- **Product Name**: Required, minimum 1 character
-- **Price**: Must be a positive number (> 0)
-- **Category**: Required, non-empty
-- **Stock Quantity**: Must be non-negative (>= 0)
-
-## HTTP Status Codes Used
-
-| Status Code | Usage |
-|-------------|-------|
-| 200 OK | Successful GET requests |
+2.0.0 - Database Integration and Frontend Implementation
 | 201 Created | Successful POST (creation) |
 | 204 No Content | Successful DELETE |
 | 400 Bad Request | Invalid request data |
