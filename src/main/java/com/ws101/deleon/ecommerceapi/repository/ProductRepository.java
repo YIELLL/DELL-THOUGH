@@ -1,6 +1,6 @@
 package com.ws101.deleon.ecommerceapi.repository;
 
-import com.ws101.deleon.ecommerceapi.model.Product;
+import com.ws101.deleon.ecommerceapi.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,10 +23,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /**
      * Find all products in a specific category.
      * 
-     * @param categoryId the category identifier
+     * @param category the category entity
      * @return list of products in the category
      */
-    List<Product> findByCategoryId(Long categoryId);
+    List<Product> findByCategory(Category category);
     
     /**
      * Search products by name (case-insensitive).
@@ -65,14 +65,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /**
      * Find products by category and price range combined.
      * 
-     * @param categoryId the category identifier
+     * @param category the category entity
      * @param minPrice the minimum price
      * @param maxPrice the maximum price
      * @return list of products matching both criteria
      */
-    @Query("SELECT p FROM Product p WHERE p.categoryId = :categoryId AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.price ASC")
+    @Query("SELECT p FROM Product p WHERE p.category = :category AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.price ASC")
     List<Product> findByCategoryAndPriceRange(
-            @Param("categoryId") Long categoryId,
+            @Param("category") Category category,
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice
     );

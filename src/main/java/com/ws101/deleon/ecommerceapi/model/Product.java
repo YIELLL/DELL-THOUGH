@@ -61,12 +61,13 @@ public class Product {
     private Double price;
     
     /**
-     * Category identifier (Foreign Key).
-     * Links this product to a category.
+     * Category this product belongs to.
+     * Many-to-One relationship with Category entity.
      */
-    @NotNull(message = "Category ID is required")
-    @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    @NotNull(message = "Product category is required")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
     
     /**
      * Available stock quantity for the product.

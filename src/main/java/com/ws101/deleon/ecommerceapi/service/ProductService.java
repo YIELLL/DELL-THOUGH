@@ -87,7 +87,7 @@ public class ProductService {
         existing.setName(product.getName());
         existing.setDescription(product.getDescription());
         existing.setPrice(product.getPrice());
-        existing.setCategoryId(product.getCategoryId());
+        existing.setCategory(product.getCategory());
         existing.setStockQuantity(product.getStockQuantity());
         existing.setImageUrl(product.getImageUrl());
         return productRepository.save(existing);
@@ -118,7 +118,10 @@ public class ProductService {
             existing.setPrice(product.getPrice());
         }
         if (product.getCategoryId() != null) {
-            existing.setCategoryId(product.getCategoryId());
+            // Find the category by ID and set it
+            var category = categoryRepository.findById(product.getCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + product.getCategoryId()));
+            existing.setCategory(category);
         }
         if (product.getStockQuantity() != null) {
             if (product.getStockQuantity() < 0) {
@@ -153,7 +156,9 @@ public class ProductService {
      * @return list of products in the category
      */
     public List<Product> getProductsByCategory(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId);
+        var category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
+        return productRepository.findByCategory(category);
     }
 
     /**
@@ -243,6 +248,10 @@ public class ProductService {
      * @return list of products matching both criteria
      */
     public List<Product> getProductsByCategoryAndPriceRange(Long categoryId, Double minPrice, Double maxPrice) {
+        var category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
+        return productRepository.findByCategoryAndPriceRange(category, minPrice, maxPrice);
+    }
         return productRepository.findByCategoryAndPriceRange(categoryId, minPrice, maxPrice);
     }
 }

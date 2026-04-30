@@ -214,7 +214,7 @@ function createProductCard(product) {
         </div>
         <div class="product-body">
             <h3 class="product-name">${escapeHtml(product.name)}</h3>
-            <p class="product-category">Category ID: ${product.categoryId}</p>
+            <p class="product-category">${escapeHtml(product.category?.name || 'Unknown Category')}</p>
             <p class="product-description">${escapeHtml(product.description)}</p>
             <div class="product-footer">
                 <span class="product-price">$${product.price.toFixed(2)}</span>

@@ -46,4 +46,11 @@ public class Category {
      */
     @Column(length = 500)
     private String description;
+    
+    /**
+     * Products belonging to this category.
+     * One-to-Many relationship with Product entity.
+     */
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products = new ArrayList<>();
 }

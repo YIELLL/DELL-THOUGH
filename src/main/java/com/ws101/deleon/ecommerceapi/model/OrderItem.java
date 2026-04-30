@@ -43,11 +43,14 @@ public class OrderItem {
     private Order order;
     
     /**
-     * Product identifier for the item being ordered.
+     * Reference to the Product being ordered.
+     * Many-to-One relationship: many order items can reference the same product.
+     * Uses LAZY loading for performance.
      */
-    @NotNull(message = "Product ID is required")
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @NotNull(message = "Product is required")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
     
     /**
      * Product name at the time of order (snapshot for historical records).
