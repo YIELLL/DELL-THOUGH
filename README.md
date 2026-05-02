@@ -98,6 +98,49 @@ http://localhost:8080/api/v1/products
 - **name**: Filter by product name (case-insensitive search)
 - **price**: Filter by price range (format: `min-max`)
 
+## Security Architecture
+
+This API uses Spring Security with Session-Based Authentication for secure access control.
+
+- **Authentication**: Users log in via form-based authentication at `/login`, establishing an HTTP session.
+- **Authorization**: Role-based access control with USER and ADMIN roles.
+- **Session Management**: Server-side sessions with automatic CSRF protection.
+- **Public Endpoints**: GET `/api/v1/products` and POST `/api/v1/auth/register` are accessible without authentication.
+- **Protected Endpoints**: Product management operations require ADMIN role.
+
+## Validation Rules
+
+Input validation is enforced using Bean Validation:
+
+- **Product**:
+  - name: Not blank
+  - description: Not blank
+  - price: Not null, positive
+  - category: Not blank
+  - stockQuantity: Not null, min 0
+
+- **User Registration**:
+  - username: Not blank, 3-20 characters
+  - password: Not blank, min 8 characters
+  - role: Optional (defaults to USER)
+
+Invalid inputs return 400 Bad Request with detailed error messages.
+
+## Updated API Reference
+
+| Method | Path | Description | Status Codes | Auth Required |
+|--------|------|-------------|--------------|---------------|
+| GET | `/api/v1/products` | Retrieve all products | 200 OK | No |
+| GET | `/api/v1/products/{id}` | Get product by ID | 200 OK, 404 Not Found | No |
+| GET | `/api/v1/products/filter?filterType=<type>&filterValue=<value>` | Filter products | 200 OK, 400 Bad Request | No |
+| POST | `/api/v1/products` | Create new product | 201 Created, 400 Bad Request | ADMIN |
+| PUT | `/api/v1/products/{id}` | Replace entire product | 200 OK, 400 Bad Request, 404 Not Found | ADMIN |
+| PATCH | `/api/v1/products/{id}` | Partially update product | 200 OK, 404 Not Found | ADMIN |
+| DELETE | `/api/v1/products/{id}` | Remove product | 204 No Content, 404 Not Found | ADMIN |
+| POST | `/api/v1/auth/register` | Register new user | 201 Created, 400 Bad Request | No |
+| POST | `/login` | Login (form-based) | 302 Redirect, 401 Unauthorized | No |
+| POST | `/logout` | Logout | 302 Redirect | Yes |
+
 ## Sample Request/Response Examples
 
 ### 1. Get All Products
