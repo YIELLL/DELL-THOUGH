@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -90,6 +90,7 @@ public class ProductController {
      * @return ResponseEntity containing the created product with HTTP 201 Created
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         Product createdProduct = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
@@ -103,6 +104,7 @@ public class ProductController {
      * @return ResponseEntity containing the updated product, or HTTP 404 Not Found
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Product> updateProduct(
             @PathVariable Long id,
             @Valid @RequestBody Product product) {
@@ -118,6 +120,7 @@ public class ProductController {
      * @return ResponseEntity containing the updated product, or HTTP 404 Not Found
      */
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Product> patchProduct(
             @PathVariable Long id,
             @RequestBody Product product) {
@@ -133,6 +136,7 @@ public class ProductController {
      *         or HTTP 404 Not Found if product doesn't exist
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
