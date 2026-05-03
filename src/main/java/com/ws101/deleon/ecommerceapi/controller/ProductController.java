@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,8 +16,8 @@ import java.util.List;
  * 
  * This controller handles all HTTP requests related to product operations.
  * It acts as the bridge between the frontend and the service layer,
- * performing input validation and delegating business logic to ProductService.
- * 
+ * performing input validation and delegating business logic to ProductService. * 
+ * Live reload test: Application should restart automatically on save. * 
  * @author Kent Jeanne S. De Leon
  * @author Keniel Drew D. De Asis
  * @see ProductService
@@ -39,6 +40,16 @@ public class ProductController {
      */
     public ProductController(ProductService productService) {
         this.productService = productService;
+    }
+
+    /**
+     * Test endpoint to verify live reload is working.
+     * 
+     * @return ResponseEntity with test message and timestamp
+     */
+    @GetMapping("/test")
+    public ResponseEntity<String> testLiveReload() {
+        return ResponseEntity.ok("✅ Live reload is working! Server restarted at " + java.time.LocalDateTime.now() + " - Change detected! Version 3");
     }
 
     /**

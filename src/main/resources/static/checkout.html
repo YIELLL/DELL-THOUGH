@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout | DELL THOUGH</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
+</head>
+<body>
+    <header>
+        <h1>DELL THOUGH</h1>
+        <nav>
+            <ul>
+                <li><a href="landing.html">Home</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="account.html" id="accountLink" style="display:none;">Account</a></li>
+                <li><a href="login.html" id="loginLink">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main style="display: flex; gap: 20px; padding: 20px;">
+        
+        <section style="flex: 2;">
+            <h1>Checkout</h1>
+            
+            <form id="checkoutForm">
+                <section>
+                    <fieldset>
+                        <legend><strong>Shipping Address</strong></legend>
+                        <p>
+                            <label for="fullname">Full Name:</label><br>
+                            <input type="text" id="fullname" name="fullname" required>
+                        </p>
+                        <p>
+                            <label for="street">Street Address:</label><br>
+                            <input type="text" id="street" name="street" required>
+                        </p>
+                        <p>
+                            <label for="zip">Zip Code:</label><br>
+                            <input type="text" id="zip" name="zip" required>
+                        </p>
+                    </fieldset>
+                </section>
+
+                <br>
+
+                <section>
+                    <h3>Payment Method</h3>
+                    <input type="radio" id="card" name="payment_method" value="card" checked>
+                    <label for="card">Credit Card</label><br>
+                    
+                    <input type="radio" id="paypal" name="payment_method" value="paypal">
+                    <label for="paypal">PayPal</label>
+                </section>
+
+                <br>
+                <button type="submit" style="padding: 10px 20px;">Place Order</button>
+            </form>
+        </section>
+
+        <aside style="flex: 1; border: 1px solid black; padding: 15px; height: fit-content;">
+            <h3>Order Summary</h3>
+            <div id="order-items"></div>
+            <hr>
+            <p>Subtotal: ₱<span id="subtotal">0.00</span></p>
+            <p>Shipping: ₱150.00</p>
+            <h3>Total: ₱<span id="total">150.00</span></h3>
+        </aside>
+
+    </main>
+
+    <br><hr>
+
+    <footer>
+        <p>© 2026 Jovan's Tech. All rights reserved</p>
+    </footer>
+
+    <script>
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                alert('Please log in to checkout');
+                window.location.href = 'login.html';
+                return false;
+            }
+            if (isLoggedIn) {
+                document.getElementById('accountLink').style.display = 'inline';
+                document.getElementById('loginLink').style.display = 'none';
+            }
+            return true;
+        }
+
+        function loadOrderSummary() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const itemsDiv = document.getElementById('order-items');
+            itemsDiv.innerHTML = '';
+
+            let subtotal = 0;
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                itemsDiv.innerHTML += `<p><strong>${item.name}</strong> x${item.quantity}<br>₱${itemTotal.toFixed(2)}</p>`;
+            });
+
+            const total = subtotal + 150;
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('total').textContent = total.toFixed(2);
+
+            if (cart.length === 0) {
+                document.querySelector('main').innerHTML = '<p>Your cart is empty. <a href="products.html">Continue Shopping</a></p>';
+            }
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Order placed successfully! Thank you for your purchase.');
+            localStorage.removeItem('cart');
+            window.location.href = 'account.html';
+        });
+
+        if (checkLogin()) {
+            loadOrderSummary();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | DELL THOUGH</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
+</head>
+<body>
+<header>
+    <h1>DELL THOUGH</h1>
+    <nav>
+        <ul>
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="products.html">Shop</a></li>
+            <li><a href="cart.html">Cart</a></li>
+        </ul>
+    </nav>
+</header>
+
+<hr>
+
+<main align="center">
+    <h1>Login</h1>
+    <p>Log in to your account.</p>
+
+    <form id="loginForm">
+        <p>
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required>
+        </p>
+
+        <p>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" required>
+        </p>
+
+        <button type="submit">Log In</button>
+        <p id="message" style="color: red;"></p>
+    </form>
+
+    <p>Don't have an account? <a href="sign.html">Sign Up</a></p>
+</main>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const messageDiv = document.getElementById('message');
+
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Store token and user info in localStorage
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('username', data.username);
+                localStorage.setItem('role', data.role);
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                messageDiv.style.color = 'green';
+                messageDiv.textContent = 'Login successful! Redirecting...';
+                setTimeout(() => window.location.href = 'products.html', 1500);
+            } else {
+                messageDiv.style.color = 'red';
+                const errorData = await response.text();
+                messageDiv.textContent = errorData || 'Login failed. Check credentials.';
+            }
+        } catch (error) {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = 'Error: ' + error.message;
+        }
+    });
+</script>
+
+</body>
+</html>

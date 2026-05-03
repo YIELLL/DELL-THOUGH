@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up | DELL THOUGH</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
+</head>
+<body>
+<header>
+    <h1>DELL THOUGH</h1>
+    <nav>
+        <ul>
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="products.html">Shop</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="landing.html">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+    <hr>
+
+    <main align="center">
+        <h1>Create Account</h1>
+        <p>Join Tech Tech ni Jovan for exclusive Audio Deals.</p>
+
+        <form id="registerForm">
+            <p>
+                <label for="username">Username:</label><br>
+                <input type="text" id="username" name="username" required>
+            </p>
+
+            <p>
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password" required>
+            </p>
+
+            <p>
+                <label for="role">Role (optional):</label><br>
+                <select id="role" name="role">
+                    <option value="USER">User</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            </p>
+
+            <button type="submit">Sign Up</button>
+            <p id="message" style="color: red;"></p>
+        </form>
+
+        <p>Already have an account? <a href="login.html">Log In</a></p>
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>© 2026 Jovan's Tech. All rights reserved</p>
+    </footer>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            const messageDiv = document.getElementById('message');
+
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password, role })
+                });
+
+                const result = await response.text();
+                if (response.ok) {
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Registration successful! Redirecting to login...';
+                    setTimeout(() => window.location.href = 'login.html', 2000);
+                } else {
+                    messageDiv.textContent = result || 'Registration failed';
+                }
+            } catch (error) {
+                messageDiv.textContent = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

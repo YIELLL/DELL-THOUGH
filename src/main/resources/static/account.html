@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Account | DELL THOUGH</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
+</head>
+<body>
+<header>
+    <h2>Welcome, <span id="username-display">User</span>!</h2>
+    <nav>
+        <ul>
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="products.html">Shop</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+    <hr>
+
+    <main>
+        <h1>Order History</h1>
+        <p>Click on an order to view details.</p>
+
+        <section id="orders-section">
+            <p>No orders yet. <a href="products.html">Start shopping!</a></p>
+        </section>
+
+        <hr>
+        
+        <section>
+            <h2>Profile Details</h2>
+            <p><strong>Username:</strong> <span id="profile-username">N/A</span></p>
+            <p><strong>Member since:</strong> 2026</p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2026 Jovan's Tech. All rights reserved</p>
+    </footer>
+
+    <script>
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        function loadUserInfo() {
+            const username = localStorage.getItem('username');
+            if (username) {
+                document.getElementById('username-display').textContent = username;
+                document.getElementById('profile-username').textContent = username;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            localStorage.removeItem('cart');
+            alert('You have been logged out.');
+            window.location.href = 'landing.html';
+        }
+
+        if (checkLogin()) {
+            loadUserInfo();
+        }
+    </script>
+</body>
+</html>

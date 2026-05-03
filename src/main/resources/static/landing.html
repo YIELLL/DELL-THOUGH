@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home | DELL THOUGH</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
+</head>
+<body>
+
+    <header>
+        <h1>DELL THOUGH</h1>
+        <nav>
+            <ul>
+                <li><a href="landing.html">Home</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="account.html" id="accountLink" style="display:none;">Account</a></li>
+                <li><a href="sign.html" id="signupLink">Sign Up</a></li>
+                <li><a href="login.html" id="loginLink">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <h1>The New Standard of Sound</h1>
+            <p>Experience the ultimate 2026 Audio Collection. From the industry-leading noise cancellation of the <strong>Sony WH-1000XM6</strong> to the 60-hour power of the <strong>Sennheiser Momentum 4</strong>.</p>
+            <br>
+            <button type="button" onclick="location.href='products.html'">Shop the Collection</button>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2 class="h22" >Featured Audio Gear</h2>
+            <p class="h22">Our top picks for elite performance and comfort.</p>
+            
+            <div class="product-grid">
+                <article>
+                    <img src="1.jpeg" alt="Sony WH-1000XM6">
+                    <h3>Sony WH-1000XM6</h3>
+                    <p>The best overall with the all-new QN3 processor and a foldable design.</p>
+                    <p class="price">24,990.00</p>
+                    <button type="button" onclick="location.href='product-view1.html'">View Product</button>
+                </article>
+
+                <article>
+                    <img src="2.jpeg" alt="Bose QC Ultra">
+                    <h3>Bose QC Ultra (2nd Gen)</h3>
+                    <p>The undisputed king of comfort and silence for 8+ hour sessions.</p>
+                    <p class="price">26,500.00</p>
+                    <button type="button" onclick="location.href='product-view2.html'">View Product</button>
+                </article>
+            </div>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2 class="h22">Exclusive Deals</h2>
+            <p class="h22">Limited time offers on premium wireless audio.</p>
+            
+            <div class="product-grid">
+                <article>
+                    <img src="3.jpeg" alt="Sennheiser Momentum 4">
+                    <h3>Sennheiser Momentum 4</h3>
+                    <p>The battery powerhouse with audiophile sound quality.</p>
+                    <p><del>₱24,000.00</del> <br> <strong class="price">21,000.00</strong></p>
+                    <button type="button" onclick="location.href='product-view3.html'">Claim Deal</button>
+                </article>
+
+                <article>
+                    <img src="4.jpeg" alt="Apple AirPods Max">
+                    <h3>Apple AirPods Max (USB-C)</h3>
+                    <p>Premium pick for the Apple ecosystem. Natural transparency mode.</p>
+                    <p class="price">32,990.00</p>
+                    <button type="button" onclick="location.href='product-view4.html'">Claim Deal</button>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>© 2026 Tech Tech ni Jovan All rights reserved.</p>
+    </footer>
+
+    <script>
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn) {
+                document.getElementById('accountLink').style.display = 'inline';
+                document.getElementById('signupLink').style.display = 'none';
+                document.getElementById('loginLink').style.display = 'none';
+            }
+        }
+        checkLogin();
+    </script>
+
+</body>
+</html>

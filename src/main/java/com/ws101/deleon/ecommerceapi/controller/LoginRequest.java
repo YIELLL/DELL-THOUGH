@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 /**
- * DTO for user registration request.
+ * DTO for login requests
  */
-public class RegisterRequest {
+public class LoginRequest {
     
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
@@ -16,19 +16,13 @@ public class RegisterRequest {
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
-    private String role; // optional, default USER
+    public LoginRequest() {}
 
-    // Constructors
-    public RegisterRequest() {
-    }
-
-    public RegisterRequest(String username, String password, String role) {
+    public LoginRequest(String username, String password) {
         this.username = username;
         this.password = password;
-        this.role = role;
     }
 
-    // Getters and Setters
     public String getUsername() {
         return username;
     }
@@ -43,13 +37,5 @@ public class RegisterRequest {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 }

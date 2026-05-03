@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Details | Tech Tech ni Jovan</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
+</head>
+<body>
+    <header>
+        <h1>DELL THOUGH</h1>
+        <nav>
+            <ul>
+                <li><a href="landing.html">Home</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="account.html" id="accountLink" style="display:none;">Account</a></li>
+                <li><a href="login.html" id="loginLink">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="padding: 20px;">
+        <div id="product-details">
+            <!-- Product details will be loaded here -->
+        </div>
+        
+        <form id="addToCartForm" style="display:none;">
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" max="100" required>
+            <button type="submit">Add to Cart</button>
+        </form>
+        <p><a href="products.html">Back to Shop</a></p>
+    </main>
+
+    <script>
+        async function loadProduct() {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+
+            if (!productId) {
+                document.getElementById('product-details').innerHTML = '<p>Product not found</p>';
+                return;
+            }
+
+            try {
+                const headers = {};
+                const token = localStorage.getItem('token');
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const response = await fetch(`http://localhost:8080/api/v1/products/${productId}`, { headers });
+                if (response.ok) {
+                    const product = await response.json();
+                    displayProduct(product);
+                } else {
+                    document.getElementById('product-details').innerHTML = '<p>Product not found</p>';
+                }
+            } catch (error) {
+                console.error('Error loading product:', error);
+                document.getElementById('product-details').innerHTML = '<p>Error loading product</p>';
+            }
+        }
+
+        function displayProduct(product) {
+            const details = document.getElementById('product-details');
+            details.innerHTML = `
+                <h1>${product.name}</h1>
+                <img src="${product.imageUrl || 'placeholder.jpg'}" alt="${product.name}" width="300px">
+                <h2>Price: ₱${product.price}</h2>
+                <h3>Category: ${product.category}</h3>
+                <p><strong>Stock Available:</strong> ${product.stockQuantity} units</p>
+                <section>
+                    <h3>Description</h3>
+                    <p>${product.description}</p>
+                </section>
+            `;
+
+            if (product.stockQuantity > 0) {
+                document.getElementById('addToCartForm').style.display = 'block';
+                document.getElementById('addToCartForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    addToCart(product);
+                });
+            } else {
+                details.innerHTML += '<p style="color: red;"><strong>Out of Stock</strong></p>';
+            }
+        }
+
+        function addToCart(product) {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            const existingItem = cart.find(item => item.id === product.id);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: quantity
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert('Product added to cart!');
+            window.location.href = 'cart.html';
+        }
+
+        // Check if user is logged in
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn) {
+                document.getElementById('accountLink').style.display = 'inline';
+                document.getElementById('loginLink').style.display = 'none';
+            }
+        }
+
+        checkLogin();
+        loadProduct();
+    </script>
+</body>
+</html>

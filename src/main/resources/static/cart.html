@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart | DELL THOUGH</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
+</head>
+<body>
+<header>
+    <h1>DELL THOUGH</h1>
+    <nav>
+        <ul>
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="products.html">Shop</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="account.html" id="accountLink" style="display:none;">Account</a></li>
+            <li><a href="login.html" id="loginLink">Login</a></li>
+        </ul>
+    </nav>
+</header>
+
+    <hr>
+
+    <main>
+        <h1>Your Shopping Cart</h1>
+
+        <section id="empty-cart-message" style="display: none;">
+            <p>Your cart is currently empty.</p>
+            <a href="products.html">Go Shopping</a>
+        </section>
+
+        <section id="cart-contents" style="display: none;">
+            <table border="1" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-items">
+                </tbody>
+            </table>
+
+            <hr>
+
+            <section style="text-align: right;">
+                <h3>Subtotal: ₱<span id="subtotal">0.00</span></h3>
+                <p>Shipping and taxes calculated at checkout.</p>
+                
+                <a href="checkout.html">
+                    <button style="padding: 10px 20px; font-size: 16px;">Proceed to Checkout</button>
+                </a>
+            </section>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 Jovan's Tech. All rights reserved</p>
+    </footer>
+
+    <script>
+        function loadCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartContents = document.getElementById('cart-contents');
+            const emptyMessage = document.getElementById('empty-cart-message');
+            const cartItems = document.getElementById('cart-items');
+
+            if (cart.length === 0) {
+                cartContents.style.display = 'none';
+                emptyMessage.style.display = 'block';
+                return;
+            }
+
+            cartContents.style.display = 'block';
+            emptyMessage.style.display = 'none';
+            cartItems.innerHTML = '';
+
+            let subtotal = 0;
+            cart.forEach((item, index) => {
+                const itemSubtotal = item.price * item.quantity;
+                subtotal += itemSubtotal;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>₱${item.price.toFixed(2)}</td>
+                    <td>
+                        <input type="number" value="${item.quantity}" min="1" 
+                               onchange="updateQuantity(${index}, this.value)">
+                    </td>
+                    <td>₱${itemSubtotal.toFixed(2)}</td>
+                    <td>
+                        <button onclick="removeFromCart(${index})">Remove</button>
+                    </td>
+                `;
+                cartItems.appendChild(row);
+            });
+
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+        }
+
+        function updateQuantity(index, quantity) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart[index].quantity = parseInt(quantity);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        function removeFromCart(index) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn) {
+                document.getElementById('accountLink').style.display = 'inline';
+                document.getElementById('loginLink').style.display = 'none';
+            }
+        }
+
+        checkLogin();
+        loadCart();
+    </script>
+</body>
+</html>
