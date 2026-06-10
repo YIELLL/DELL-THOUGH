@@ -1,5 +1,5 @@
 # EcommerceApi - RESTful Product Catalog API
-DE ASIS, KENIEL DREW D.
+DE ASIS, KENIEL DREW D. &
 DE LEON, KENT JEANNE S.
 
 A Spring Boot REST API backend for an e-commerce project demonstrating HTTP fundamentals, REST principles, and CRUD operations with in-memory data storage.
